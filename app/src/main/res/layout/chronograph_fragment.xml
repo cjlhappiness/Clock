@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="Fragment.ChronographFragment">
+
+    <TextView
+        android:id="@+id/chronograph_show"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="75sp"
+        android:gravity="center"
+        android:layout_margin="25dp"
+        android:text="@string/chronograph_time"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+        <Button
+            android:id="@+id/chronograph_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_shape"
+            android:layout_margin="10dp"
+            android:text="@string/chronograph_start"/>
+        <Button
+            android:id="@+id/chronograph_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_shape"
+            android:text="@string/chronograph_pause"/>
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/chronograph_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

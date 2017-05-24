@@ -3,18 +3,13 @@ package Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Switch;
-
 import com.example.cjlhappiness.clock.AddAlarmActivity;
-import com.example.cjlhappiness.clock.AlarmServer;
 import com.example.cjlhappiness.clock.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,11 +71,16 @@ public class AlarmFragment extends Fragment implements View.OnClickListener , Ad
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         int id = data.getIntExtra("id", -1);
-        Intent intent = new Intent(getActivity(), AlarmServer.class);
-        intent.putExtra("OBJECT", AlarmServer.OBJECT[0]);
-        intent.putExtra("CODE",resultCode);
-        intent.putExtra("id",id);
-        getActivity().startService(intent);
+        if (resultCode == AlarmTool.ALARM_CLOSE_CODE[4]){//修改
+            AlarmTool.stopAlarm(getActivity(), id);
+            AlarmTool.startAlarm(getActivity(), helper, id);
+        }else if (resultCode == AlarmTool.ALARM_CLOSE_CODE[3]){//删除
+            AlarmTool.stopAlarm(getActivity(), id);
+        }else if (resultCode == AlarmTool.ALARM_CLOSE_CODE[2]){//添加
+            AlarmTool.startAlarm(getActivity(), helper, id);
+        }else{
+            //取消不作处理
+        }
         listUpdate();
     }
 

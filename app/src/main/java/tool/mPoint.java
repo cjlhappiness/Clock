@@ -9,8 +9,8 @@ public class mPoint extends View {
 
     private int size;
     private int x, y;
-    private int[] color = new int[]{0xFF000000, 0xFF444444, 0xFF888888, 0xFFCCCCCC, 0xFFFF0000, 0xFF00FF00,
-            0xFF0000FF, 0xFFFFFF00, 0xFF00FFFF, 0xFFFF00FF};
+    private static final int[] color = new int[]{0xFF000000, 0xFF444444, 0xFF888888, 0xFFCCCCCC,
+            0xFFFF0000, 0xFF00FF00, 0xFF0000FF, 0xFFFFFF00, 0xFF00FFFF, 0xFFFF00FF};
 
     public mPoint(Context context) {
         super(context);

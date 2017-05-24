@@ -5,11 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import com.example.cjlhappiness.clock.AlarmActivity;
-
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-
 import db.AlarmCRUD;
 import db.AlarmDataBaseHelper;
 
@@ -25,7 +21,7 @@ public class AlarmTool {
     //计算当前时间到设定时间的剩余时间，传入目标时间（秒）以及距离目标时间的间隔天数
     public static int getSurplusTime(int target , int day){
         int surplusTime;
-        int nowDay = getNowTime() ;
+        int nowDay = getNowTime();
         int oneDay = 24 * 3600;
         if (target <= nowDay){//前面已经做过如果target <= nowDay要减1天的逻辑，所以这里要加回去，因为以target = nowDay为临界点，<或>只是相差了2秒，并不是差了一天
             day += 1;
@@ -61,12 +57,21 @@ public class AlarmTool {
 
     // /获得下一个目标时间到当前时间的时长（如 1天16时30分后提醒），传入剩余时间（秒）
     public static String getNextTimeText(int surplusTime){
+        String nextTimeText;
         int day = surplusTime / 86400;
         int surplusTimeOfDay = surplusTime % 86400;
         int hour = surplusTimeOfDay / 3600;
         int minute = surplusTimeOfDay % 3600 / 60;
         int second = surplusTimeOfDay % 3600 % 60;
-        String nextTimeText = String.format("%02d天%02d时%02d分后提醒", day , hour , minute);
+        if (day > 0){
+           nextTimeText  = String.format("%02d天%02d时%02d分后提醒", day , hour , minute);
+        }else if(hour > 0){
+            nextTimeText  = String.format("%02d时%02d分后提醒", hour , minute);
+        }else if (minute > 0){
+            nextTimeText  = String.format("%02d分后提醒", minute);
+        }else {
+            nextTimeText = "1分钟内提醒";
+        }
         return nextTimeText;
     }
 
@@ -209,40 +214,11 @@ public class AlarmTool {
         manager.set(AlarmManager.RTC_WAKEUP ,longTime , pi);
     }
 
-    public static void startAlarm(Context context, AlarmListData data){
-        int id = data.getId();
-        int nextTime = getNextDay(data.getRepeat(), 0);
-        int overTime = getOverDay(nextTime, data.getTime(), data.getRepeat());
-        long longTime = getTargetTime(data.getTime(), overTime);
-        Intent intent = new Intent(context, AlarmActivity.class);
-        intent.putExtra("dataId", id);
-        PendingIntent pi = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager manager =(AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        manager.set(AlarmManager.RTC_WAKEUP ,longTime , pi);
-    }
-
-    public static void startAllAlarm(Context context, AlarmDataBaseHelper helper){
-        List<AlarmListData> list = new ArrayList<>();
-        list = AlarmCRUD.queryAlarm(helper ,list);
-        for (AlarmListData data : list){
-            startAlarm(context, data);
-        }
-    }
-
     public static void stopAlarm(Context context, int id) {
         AlarmManager manager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmActivity.class);
         PendingIntent pi = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         manager.cancel(pi);
     }
-
-    public static void stopAllAlarm(Context context, AlarmDataBaseHelper helper) {
-        List<AlarmListData> list = new ArrayList<>();
-        list = AlarmCRUD.queryAlarm(helper ,list);
-        for (AlarmListData data : list){
-            stopAlarm(context, data.getId());
-        }
-    }
-
 
 }

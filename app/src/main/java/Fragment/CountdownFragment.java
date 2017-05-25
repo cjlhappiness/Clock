@@ -148,6 +148,7 @@ public class CountdownFragment extends Fragment implements View.OnClickListener 
         longTime = 0;
         isStart = false;
         isSeek = false;
+        onProgressChanged(countdownSeek, 0, true);
         countdownSeek.setProgress(0);
         buttonStart.setText("开始");
         countdownShow.setText("00:00");

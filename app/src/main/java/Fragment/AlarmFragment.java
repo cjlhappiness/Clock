@@ -71,12 +71,12 @@ public class AlarmFragment extends Fragment implements View.OnClickListener , Ad
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         int id = data.getIntExtra("id", -1);
-        if (resultCode == AlarmTool.ALARM_CLOSE_CODE[4]){//修改
+        if (resultCode == AlarmTool.ALARM_CLOSE_CODE[3]){//修改
             AlarmTool.stopAlarm(getActivity(), id);
             AlarmTool.startAlarm(getActivity(), helper, id);
-        }else if (resultCode == AlarmTool.ALARM_CLOSE_CODE[3]){//删除
+        }else if (resultCode == AlarmTool.ALARM_CLOSE_CODE[2]){//删除
             AlarmTool.stopAlarm(getActivity(), id);
-        }else if (resultCode == AlarmTool.ALARM_CLOSE_CODE[2]){//添加
+        }else if (resultCode == AlarmTool.ALARM_CLOSE_CODE[1]){//添加
             AlarmTool.startAlarm(getActivity(), helper, id);
         }else{
             //取消不作处理

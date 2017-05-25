@@ -18,7 +18,7 @@ public class AlarmTool {
     public static final int[] ALARM_CLOSE_CODE = new int[]{1, 2, 3, 4};
     //约定常量，当AddAlarmActivity被打开时，1代表添加，2代表修改
     public static final int[] ALARM_OPEN_CODE = new int[]{1, 2};
-    //约定常量，0代表关闭,1代表开启
+    //约定常量，0代表关闭,1代表开启 闹钟
     public static final int[] ALARM_OPEN_CLOSE = new int[]{0, 1};
 
     //计算当前时间到设定时间的剩余时间，传入目标时间（秒）以及距离目标时间的间隔天数

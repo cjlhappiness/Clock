@@ -128,21 +128,21 @@ public class AddAlarmActivity extends AppCompatActivity
     private void cancelButton(int operateCode){//取消，删除按钮
         if (operateCode ==  ALARM_OPEN_CODE[1]){//通过list点击进来
             AlarmCRUD.deleteAlarm(helper , oldAlarmData.getId());
-            closeCode = AlarmTool.ALARM_CLOSE_CODE[3];
+            closeCode = AlarmTool.ALARM_CLOSE_CODE[2];
         }else {
-            closeCode = AlarmTool.ALARM_CLOSE_CODE[1];
+            closeCode = AlarmTool.ALARM_CLOSE_CODE[0];
         }
         returnResult();
     }
 
     private void confirmButton(int operateCode){//添加，修改按钮
         if (targetTime == 0){targetTime = getNowTime();}
-        if (operateCode == ALARM_OPEN_CODE[0]){//通过添加按钮点击进来
-            alarmId = AlarmCRUD.createAlarm(helper, targetTime, repeat, vibrate, ring, ALARM_OPEN_CLOSE[1]);
-            closeCode = AlarmTool.ALARM_CLOSE_CODE[2];
-        }else {
+        if (operateCode == ALARM_OPEN_CODE[1]){//通过添加按钮点击进来
             AlarmCRUD.updateAlarm(helper, alarmId, AlarmCRUD.UPDATE_CODE[0], targetTime, repeat, vibrate, ring, ALARM_OPEN_CLOSE[1]);
             closeCode = AlarmTool.ALARM_CLOSE_CODE[3];
+        }else {
+            alarmId = AlarmCRUD.createAlarm(helper, targetTime, repeat, vibrate, ring, ALARM_OPEN_CLOSE[1]);
+            closeCode = AlarmTool.ALARM_CLOSE_CODE[1];
         }
         returnResult();
     }
@@ -259,7 +259,7 @@ public class AddAlarmActivity extends AppCompatActivity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK){
-            closeCode = AlarmTool.ALARM_CLOSE_CODE[1];
+            closeCode = AlarmTool.ALARM_CLOSE_CODE[0];
             returnResult();
         }
         return true;

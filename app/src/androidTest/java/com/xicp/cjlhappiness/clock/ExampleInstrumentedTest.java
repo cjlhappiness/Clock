@@ -1,4 +1,4 @@
-package com.example.cjlhappiness.clock;
+package com.xicp.cjlhappiness.clock;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

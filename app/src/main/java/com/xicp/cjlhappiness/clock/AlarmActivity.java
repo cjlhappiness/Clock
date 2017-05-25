@@ -1,4 +1,4 @@
-package com.example.cjlhappiness.clock;
+package com.xicp.cjlhappiness.clock;
 
 import android.app.KeyguardManager;
 import android.content.Context;

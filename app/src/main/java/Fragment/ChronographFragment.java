@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import com.example.cjlhappiness.clock.R;
+import com.xicp.cjlhappiness.clock.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import com.example.cjlhappiness.clock.R;
+import com.xicp.cjlhappiness.clock.R;
 
 public class CountdownFragment extends Fragment implements View.OnClickListener ,
         Chronometer.OnChronometerTickListener ,SeekBar.OnSeekBarChangeListener {

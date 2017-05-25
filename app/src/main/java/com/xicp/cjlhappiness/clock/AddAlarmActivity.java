@@ -1,4 +1,4 @@
-package com.example.cjlhappiness.clock;
+package com.xicp.cjlhappiness.clock;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -21,6 +20,7 @@ import db.AlarmCRUD;
 import db.AlarmDataBaseHelper;
 import tool.AlarmListData;
 import tool.AlarmTool;
+import tool.mSpinner;
 import static tool.AlarmTool.*;
 
 public class AddAlarmActivity extends AppCompatActivity
@@ -29,19 +29,22 @@ public class AddAlarmActivity extends AppCompatActivity
 
     private TimePicker timePicker;
     private TextView showPickTime;
-    private Spinner chooseSpinner;
+    private mSpinner chooseSpinner;
     private Switch chooseVibrate;
     private Switch chooseRing;
     private Button cancel, confirm;
     private int alarmId;
     private int targetTime;
     private int closeCode;
-    private String repeat = "0";//单次
-    private int vibrate = 1;
-    private int ring = 1;
     private int isAlarmAddOrDel;
     private AlarmListData oldAlarmData;
     private AlarmDataBaseHelper helper;
+
+    private boolean loadSelect;
+
+    private String repeat  = "0";  //默认单次
+    private int    vibrate = 1;     //默认开启震动
+    private int    ring    = 1;     //默认开启铃声
 
 
     //初始化各个控件，创建数据库，设置监听器
@@ -50,7 +53,7 @@ public class AddAlarmActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_alarm);
 
-        chooseSpinner = (Spinner) findViewById(R.id.chooseSpinner);
+        chooseSpinner = (mSpinner) findViewById(R.id.chooseSpinner);
         chooseVibrate = (Switch) findViewById(R.id.chooseVibrate);
         chooseRing = (Switch) findViewById(R.id.chooseRing);
         showPickTime = (TextView) findViewById(R.id.showPickTime);
@@ -65,16 +68,19 @@ public class AddAlarmActivity extends AppCompatActivity
         confirm.setOnClickListener(this);
         helper = new AlarmDataBaseHelper(this, "Alarm.db" , null , 1);
         addOrRevise(getIntent());//判断按钮显示的文字及按钮操作
+
+        loadSelect = true;
     }
 
     //根据界面被打开的方式，改变按钮文字，spinner列表，switch开关，text文本剩余时间的显示
     private void addOrRevise(Intent intent) {
         targetTime = getNowTime();
-        changeToTargetString(targetTime, repeat);//将下一个目标时间转化为显示的字符串
+        changeToTargetString(targetTime, repeat);//将目标时间转化为显示的字符串
 
-        isAlarmAddOrDel = intent.getIntExtra("actionFlag" , AlarmTool.ALARM_OPEN_CODE[0]);
-        alarmId = intent.getIntExtra("oldAlarm", -1);
+        isAlarmAddOrDel = intent.getIntExtra("actionFlag" , AlarmTool.ALARM_OPEN_CODE[0]);//添加或修改
+
         if (isAlarmAddOrDel == AlarmTool.ALARM_OPEN_CODE[1]){//通过list点击进来
+            alarmId = intent.getIntExtra("oldAlarm", -1);//获得要操作的闹钟id
             oldAlarmData = AlarmCRUD.queryOneAlarm(helper, alarmId);
             repeat = oldAlarmData.getRepeat();
             changeButtonState();//通过list点击进入，改变按钮显示的文字，switch开关状态（默认开）
@@ -82,7 +88,7 @@ public class AddAlarmActivity extends AppCompatActivity
         }
     }
 
-    //通过list点击进入，改变按钮显示的文字，switch震动开关状态（默认开）
+    //通过list点击进入，改变按钮显示的文字，switch震动开关状态（默认（1）开）
     private void changeButtonState(){
         cancel.setText("删除");
         confirm.setText("保存");
@@ -198,6 +204,10 @@ public class AddAlarmActivity extends AppCompatActivity
     }
 
     private void divRepetitionResult(){
+        if (loadSelect){
+            loadSelect = false;
+            return;
+        }
         View view = LayoutInflater.from(this).inflate(R.layout.div_repetition , null);
         int[] checkDay = new int[]{R.id.check_monday , R.id.check_tuesday , R.id.check_wednesday ,
         R.id.check_thursday , R.id.check_friday , R.id.check_saturday , R.id.check_sunday};
@@ -236,10 +246,8 @@ public class AddAlarmActivity extends AppCompatActivity
     private void selectInterval() {
         if (repeat.equals("0") ){
             chooseSpinner.setSelection(0);
-            return;
         }else if (repeat.equals("1234567") || repeat.equals("8") ){
             chooseSpinner.setSelection(1);
-            return;
         }else if (repeat.equals("12345")){
             chooseSpinner.setSelection(2);
         }else{

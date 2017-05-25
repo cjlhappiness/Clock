@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.cjlhappiness.clock">
+    package="com.xicp.cjlhappiness.clock">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -12,16 +12,16 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.xicp.cjlhappiness.clock.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddAlarmActivity" />
+        <activity android:name="com.xicp.cjlhappiness.clock.AddAlarmActivity" />
         <activity
-            android:name=".AlarmActivity"
+            android:name="com.xicp.cjlhappiness.clock.AlarmActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
     </application>

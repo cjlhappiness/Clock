@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.cjlhappiness.clock.AddAlarmActivity">
+    tools:context="com.xicp.cjlhappiness.clock.AddAlarmActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:text="@string/activity_add_alarm_repetition"/>
-            <Spinner
+            <tool.mSpinner
                 android:id="@+id/chooseSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

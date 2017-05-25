@@ -1,4 +1,4 @@
-package com.example.cjlhappiness.clock;
+package com.xicp.cjlhappiness.clock;
 
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;

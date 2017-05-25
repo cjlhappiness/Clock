@@ -1,4 +1,4 @@
-package com.example.cjlhappiness.clock;
+package com.xicp.cjlhappiness.clock;
 
 import org.junit.Test;
 

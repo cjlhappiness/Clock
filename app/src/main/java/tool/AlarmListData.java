@@ -42,4 +42,8 @@ public class AlarmListData {
         return state;
     }
 
+    public void setState(int state) {
+        this.state = state;
+    }
+
 }

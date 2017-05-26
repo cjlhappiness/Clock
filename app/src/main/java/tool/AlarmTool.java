@@ -24,13 +24,13 @@ public class AlarmTool {
     //计算当前时间到设定时间的剩余时间，传入目标时间（秒）以及距离目标时间的间隔天数
     public static int getSurplusTime(int target, int day) {
         int surplusTime;
-        int nowDay = getNowTime();
+        int nowTime = getNowTime();
         int oneDay = 24 * 3600;
-        if (target <= nowDay) {//前面已经做过如果target <= nowDay要减1天的逻辑，所以这里要加回去，因为以target = nowDay为临界点，<或>只是相差了2秒，并不是差了一天
-            day += 1;
-        }
+//        if (target <= nowTime) {//前面已经做过如果target <= nowTime要减1天的逻辑，所以这里要加回去，因为以target = nowDay为临界点，<或>只是相差了2秒，并不是差了一天
+//            day += 1;
+//        }
         int DayToSecond = day * oneDay;
-        surplusTime = target - nowDay + DayToSecond;
+        surplusTime = target - nowTime + DayToSecond;
 
         return surplusTime - 60;
     }
@@ -41,7 +41,7 @@ public class AlarmTool {
         return targetTimeText;
     }
 
-    //获得当前的系统时间，精确到分
+    //获得当前的系统时间，精确到分,返回秒
     public static int getNowTime() {
         Calendar calendar = Calendar.getInstance();
         int nowHour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -53,21 +53,21 @@ public class AlarmTool {
     //获得现在在一周中是第几天，1为星期一
     public static int getNowDayOfWeek() {
         Calendar calendar = Calendar.getInstance();
-        int nowDay = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+        int nowDay = calendar.get(Calendar.DAY_OF_WEEK) - 1;//因为星期天是1，而不是星期一是1，所以要转换
         if (nowDay == 0) {
             nowDay = 7;
         }
         return nowDay;
     }
 
-    // /获得下一个目标时间到当前时间的时长（如 1天16时30分后提醒），传入剩余时间（秒）
+    // /获得下一个目标时间到当前时间的时长字符串（如 1天16时30分后提醒），传入剩余时间（秒）
     public static String getNextTimeText(int surplusTime) {
         String nextTimeText;
         int day = surplusTime / 86400;
         int surplusTimeOfDay = surplusTime % 86400;
         int hour = surplusTimeOfDay / 3600;
         int minute = surplusTimeOfDay % 3600 / 60;
-        int second = surplusTimeOfDay % 3600 % 60;
+//        int second = surplusTimeOfDay % 3600 % 60;
         if (day > 0) {
             nextTimeText = String.format("%02d天%02d时%02d分后提醒", day, hour, minute);
         } else if (hour > 0) {
@@ -80,7 +80,7 @@ public class AlarmTool {
         return nextTimeText;
     }
 
-    //获得用户设定的时间,参数为一天中某一时间的秒
+    //获得用户设定的时间周期内下一次时间的目标时间，周期内下一次的剩余天数
     //返回的是指定的日期和时间距 1970 年 1 月 1 日午夜(GMT 时间)之间的毫秒数
     public static long getTargetTime(int target, int someDay) {
         Calendar calendar = Calendar.getInstance();
@@ -88,9 +88,9 @@ public class AlarmTool {
         int targetHour = target / 3600;
         int targetMinute = target % 3600 / 60;
         int targetSecond = 0;
-        if (target <= getNowTime()) {
-            targetDay += 1;
-        }
+//        if (target <= getNowTime()) {
+//            targetDay += 1;
+//        }
         calendar.set(Calendar.HOUR_OF_DAY, targetHour);
         calendar.set(Calendar.MINUTE, targetMinute);
         calendar.set(Calendar.SECOND, targetSecond);
@@ -98,21 +98,28 @@ public class AlarmTool {
         return calendar.getTimeInMillis();
     }
 
-    //返回当前日期距离参数日期的天数差
+    //返回当前日期距离参数日期的天数差（只考虑天数差不考虑target和nowTime的关系）
     public static int getOverDay(int nextDay, int target, String repeat) {
         int nowDay = getNowDayOfWeek();
         int nowTime = getNowTime();
         int overDay;
-        //此处要注意的是，参数日期必定等于或大于获得的系统日期，等于情况下应考虑：
 
-        //此外还要考虑0和8两种day数据,自定义日期时只选择了一个日期并且系统时间小于设定时间，那么天数差必定都为0，即小于24小时
-        if (nextDay == 0 || nextDay == 8 || (target > nowTime && nowDay == nextDay)) {
-            return 0;
+        //考虑0和8两种周期day数据
+        if (nextDay == 0 || nextDay == 8) {
+            if (target <= nowTime){
+                return 1;
+            }else {
+                return 0;
+            }
         }
 
         //如果设定时间小于等于系统时间，说明当前日期的闹钟已被执行，应该重新获得下一天的日期
-        if (nextDay == nowDay && target <= nowTime) {
-            nextDay = getNextDay(repeat, 1);
+        if (nowDay == nextDay){
+            if (target <= nowTime){
+                nextDay = getNextDay(repeat, 1);
+            }else {
+                return 0;
+            }
         }
 
         //如果nextDay小于或等于nowDay的值，则说明应该计算距离下一周的天数（此处等于nowDay时，target时间大于now的情况在上面已经考虑无需再做处理）
@@ -124,13 +131,13 @@ public class AlarmTool {
 
         //上面的代码只是完成了天数差的计算，但是并未考虑具体时间的影响，这里进行考虑，如周三12：00到周五11：00，差了2天，但实际考虑时间，只差了一个完整的1天以及23个小时
         //这也是getSurplusTime()和getTargetTime()方法进行了target <= nowTime要+1的原因，因为这个方法算法的问题
-        if (target <= nowTime) {
-            return overDay - 1;
-        }
+//        if (target <= nowTime) {
+//            return overDay - 1;
+//        }
         return overDay;
     }
 
-    //获得设定的循环周期内当前日期距离目标天最近的下一个日期（日期指的是星期几）
+    //获得设定的循环周期内当前日期距离目标天最近的下一个日期（日期指的是星期几），参数code代表是否重新计算下一个日期
     public static int getNextDay(String repeat, int code) {
         int nowDay = getNowDayOfWeek();
         if (code == 1) {

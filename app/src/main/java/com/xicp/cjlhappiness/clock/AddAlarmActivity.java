@@ -138,7 +138,7 @@ public class AddAlarmActivity extends AppCompatActivity
     private void confirmButton(int operateCode){//添加，修改按钮
         if (targetTime == 0){targetTime = getNowTime();}
         if (operateCode == ALARM_OPEN_CODE[1]){//通过添加按钮点击进来
-            AlarmCRUD.updateAlarm(helper, alarmId, AlarmCRUD.UPDATE_CODE[0], targetTime, repeat, vibrate, ring, ALARM_OPEN_CLOSE[1]);
+            AlarmCRUD.updateAlarm(helper, alarmId, targetTime, repeat, vibrate, ring, ALARM_OPEN_CLOSE[1]);
             closeCode = AlarmTool.ALARM_CLOSE_CODE[3];
         }else {
             alarmId = AlarmCRUD.createAlarm(helper, targetTime, repeat, vibrate, ring, ALARM_OPEN_CLOSE[1]);

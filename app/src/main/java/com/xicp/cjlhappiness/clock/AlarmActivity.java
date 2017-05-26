@@ -74,7 +74,7 @@ public class AlarmActivity extends AppCompatActivity implements View.OnClickList
 
         //判断该闹钟是否单次并相应显示文字
         if (AlarmTool.getNextDay(data.getRepeat(), 0) == 0){
-            AlarmCRUD.updateAlarm(helper, id, AlarmCRUD.UPDATE_CODE[1], 0, "", 0, 0, AlarmTool.ALARM_OPEN_CLOSE[0]);
+            AlarmCRUD.updateAlarm(helper, id, AlarmTool.ALARM_OPEN_CLOSE[0]);
             nextTimeSurplus.setText("下一次：" + "已关闭不开启提醒");
         }else {
             AlarmTool.startAlarm(this, helper, id);

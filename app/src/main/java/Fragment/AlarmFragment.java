@@ -2,7 +2,10 @@ package Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +21,10 @@ import db.AlarmCRUD;
 import db.AlarmDataBaseHelper;
 import tool.AlarmListData;
 import tool.AlarmTool;
+import tool.mCallback;
 
-public class AlarmFragment extends Fragment implements View.OnClickListener , AdapterView.OnItemClickListener{
+public class AlarmFragment extends Fragment implements View.OnClickListener,
+        AdapterView.OnItemClickListener, mCallback {
 
     private ListView alarmList;
     private ImageButton buttonAdd;
@@ -27,6 +32,29 @@ public class AlarmFragment extends Fragment implements View.OnClickListener , Ad
     private List<AlarmListData> listData;
     private AlarmDataBaseHelper helper;
     private View view;
+
+    private boolean isStartRefresh;
+    private int refreshNum;
+
+    private static final int TIMER_CODE = 0x10;
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == TIMER_CODE){
+                listAdapter.notifyDataSetChanged();
+                refreshNum ++;
+                if (refreshNum >= 10){
+                    refreshList();
+                    refreshNum = 0;
+                    return;
+                }
+                if (!isStartRefresh) return;
+                sendEmptyMessageDelayed(TIMER_CODE, 60 * 1000);
+            }
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {//初始化View
@@ -44,14 +72,32 @@ public class AlarmFragment extends Fragment implements View.OnClickListener , Ad
         initAlarm();
         initAlarmSql();
         listUpdate();
+
         return view;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        listUpdate();
+        if (!isStartRefresh){
+            refreshList();
+            isStartRefresh = true;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        isStartRefresh = false;
     }
 
     private void initAlarm() {//初始化list，adapter，设置监听器
         listData = new ArrayList<>();
         buttonAdd.setOnClickListener(this);
         alarmList.setOnItemClickListener(this);
-        listAdapter = new AlarmAdapter(getActivity() , R.layout.alarm_list_layout , listData);
+        listAdapter = new AlarmAdapter(getActivity(), R.layout.alarm_list_layout, listData, this);
         alarmList.setAdapter(listAdapter);
     }
 
@@ -63,7 +109,7 @@ public class AlarmFragment extends Fragment implements View.OnClickListener , Ad
 
     private void listUpdate(){//刷新、获取listView显示内容
         listData.clear();
-        listData = AlarmCRUD.queryAlarm(helper , listData);
+        listData = AlarmCRUD.queryAlarm(helper, listData);
         listAdapter.notifyDataSetChanged();
     }
 
@@ -104,5 +150,25 @@ public class AlarmFragment extends Fragment implements View.OnClickListener , Ad
             intent.putExtra("oldAlarm", dataId);
         }
         startActivityForResult(intent , 0x10);
+    }
+
+    //计算当前时间到整点分钟的毫秒数并通过handler定时刷新数据
+    private void refreshList(){
+        long delayed =61 * 1000 - System.currentTimeMillis() % (1000 * 60);
+        handler.sendEmptyMessageDelayed(TIMER_CODE, delayed);
+    }
+
+    @Override
+    public void switchChange(int id, int position, boolean state) {
+        int newState;
+        if (state) {
+            newState = AlarmTool.ALARM_OPEN_CLOSE[0];
+        } else {
+            newState = AlarmTool.ALARM_OPEN_CLOSE[1];
+        }
+        AlarmCRUD.updateAlarm(helper, id, newState);
+        (listData.get(position)).setState(newState);
+        listData = AlarmCRUD.sort(listData);
+        listAdapter.notifyDataSetChanged();
     }
 }

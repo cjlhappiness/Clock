@@ -1,6 +1,7 @@
 package Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +10,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 import com.xicp.cjlhappiness.clock.R;
 import java.util.List;
+
+import Fragment.AlarmFragment;
 import db.AlarmDataBaseHelper;
 import db.AlarmCRUD;
 import tool.AlarmListData;
 import tool.AlarmTool;
+import tool.mCallback;
 
 public class AlarmAdapter extends ArrayAdapter<AlarmListData>{
 
@@ -20,12 +24,14 @@ public class AlarmAdapter extends ArrayAdapter<AlarmListData>{
     private int resourceId;
     private List<AlarmListData> list;
     private AlarmDataBaseHelper helper;
+    private mCallback back;
 
-    public AlarmAdapter(Context context, int resourceId, List<AlarmListData> list) {
+    public AlarmAdapter(Context context, int resourceId, List<AlarmListData> list, mCallback back) {
         super(context, resourceId, list);
         this.context = context;
         this.resourceId = resourceId;
         this.list = list;
+        this.back = back;
         helper = new AlarmDataBaseHelper(context , "Alarm.db" , null , 1);
     }
 
@@ -33,7 +39,7 @@ public class AlarmAdapter extends ArrayAdapter<AlarmListData>{
     public View getView(final int position, View convertView, final ViewGroup parent) {
         View view;
         ViewHolder holder;
-        boolean state;
+        final boolean state;
         final AlarmListData data = list.get(position);
         if (convertView == null){
             holder = new ViewHolder();
@@ -63,28 +69,9 @@ public class AlarmAdapter extends ArrayAdapter<AlarmListData>{
         holder.alarm_list_state.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int newState;
-                if (tempState){
-                    newState = AlarmTool.ALARM_OPEN_CLOSE[0];
-                }else{
-                    newState = AlarmTool.ALARM_OPEN_CLOSE[1];
-                }
-                AlarmCRUD.updateAlarm(helper, data.getId(), AlarmCRUD.UPDATE_CODE[1], 0, "", 0, 0, newState);
+                back.switchChange(data.getId(), position, tempState);
             }
         });
-//        holder.alarm_list_state.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                int state;
-//                if (isChecked){
-//                    state = AlarmTool.ALARM_OPEN_COLSE[1];
-//                }else{
-//                    state = AlarmTool.ALARM_OPEN_COLSE[0];
-//                }
-//
-//                AlarmCRUD.updateAlarm(helper, data.getId(), AlarmCRUD.UPDATE_CODE[1], 0, "", 0, state);
-//            }
-//        });
         return view;
     }
 

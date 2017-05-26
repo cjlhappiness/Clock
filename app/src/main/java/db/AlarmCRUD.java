@@ -3,6 +3,8 @@ package db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import tool.AlarmListData;
@@ -10,13 +12,9 @@ import tool.AlarmListData;
 //该类执行数据库的增删查改操作
 public class AlarmCRUD {
 
-    //0是更新所有，1是只更新状态
-    public static final int[] UPDATE_CODE = new int []{0, 1};
-
     //查询所有数据
-    public static List<AlarmListData> queryAlarm(AlarmDataBaseHelper helper, List<AlarmListData> listData){
+    public static List<AlarmListData> queryAlarm(AlarmDataBaseHelper helper, List<AlarmListData> list){
         SQLiteDatabase db = helper.getWritableDatabase();
-        List<AlarmListData> list = new ArrayList<>();
         Cursor cursor = db.query("AlarmTable" ,null,null,null,null,null,null);
         if (cursor.moveToFirst()){
             do {
@@ -31,8 +29,7 @@ public class AlarmCRUD {
             }while (cursor.moveToNext());
         }
         cursor.close();
-
-        return sort(list, listData);
+        return sort(list);
     }
 
     //查询某一项
@@ -75,22 +72,28 @@ public class AlarmCRUD {
     }
 
     //更新
-    public static void updateAlarm(AlarmDataBaseHelper helper, int id, int updateCode, int time,
+    public static void updateAlarm(AlarmDataBaseHelper helper, int id, int time,
                                    String repeat, int vibrate, int ring, int state){
         SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        if (updateCode == UPDATE_CODE[0]) {
             values.put("time", time);
             values.put("repeat", repeat);
             values.put("vibrate", vibrate);
             values.put("ring", ring);
-        }
+        values.put("state", state);
+        db.update("AlarmTable", values, "id ="+ id, null);
+    }
+
+    //更新
+    public static void updateAlarm(AlarmDataBaseHelper helper, int id, int state){
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
         values.put("state", state);
         db.update("AlarmTable", values, "id ="+ id, null);
     }
 
     //排序算法
-    public static List<AlarmListData> sort (List<AlarmListData> list, List<AlarmListData> listData){
+    public static List<AlarmListData> sort (List<AlarmListData> list){
         List<AlarmListData> temp1 = new ArrayList<>();
         List<AlarmListData> temp2 = new ArrayList<>();
 
@@ -105,7 +108,6 @@ public class AlarmCRUD {
                 }
             }
         }
-
         for (int i = 0 ; i < list.size() ; i++){//将筛选出的目标时间最小的数据进一步筛选其状态并分类
             if (list.get(i).getState() == 1){
                 temp1.add(list.get(i));
@@ -113,11 +115,10 @@ public class AlarmCRUD {
                 temp2.add(list.get(i));
             }
         }
-
-        listData.addAll(temp1);
-        listData.addAll(temp2);
-
-        return listData;
+        list.clear();
+        list.addAll(temp1);
+        list.addAll(temp2);
+        return list;
     }
 
 }

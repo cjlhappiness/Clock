@@ -5,8 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -24,8 +26,8 @@ import tool.mSpinner;
 import static tool.AlarmTool.*;
 
 public class AddAlarmActivity extends AppCompatActivity
-        implements TimePicker.OnTimeChangedListener , View.OnClickListener ,
-        AdapterView.OnItemSelectedListener , CompoundButton.OnCheckedChangeListener{
+        implements TimePicker.OnTimeChangedListener, View.OnClickListener ,View.OnTouchListener,
+        AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener{
 
     private TimePicker timePicker;
     private TextView showPickTime;
@@ -40,7 +42,7 @@ public class AddAlarmActivity extends AppCompatActivity
     private AlarmListData oldAlarmData;
     private AlarmDataBaseHelper helper;
 
-    private boolean loadSelect;
+    private boolean isDivRepeat;
 
     private String repeat  = "0";  //默认单次
     private int    vibrate = 1;     //默认开启震动
@@ -61,15 +63,14 @@ public class AddAlarmActivity extends AppCompatActivity
         confirm = (Button) findViewById(R.id.confirm);
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         timePicker.setOnTimeChangedListener(this);
+        chooseSpinner.setOnTouchListener(this);
         chooseSpinner.setOnItemSelectedListener(this);
         chooseVibrate.setOnCheckedChangeListener(this);
-        chooseRing.setOnCheckedChangeListener(this);
+        chooseRing.setOnClickListener(this);
         cancel.setOnClickListener(this);
         confirm.setOnClickListener(this);
         helper = new AlarmDataBaseHelper(this, "Alarm.db" , null , 1);
         addOrRevise(getIntent());//判断按钮显示的文字及按钮操作
-
-        loadSelect = true;
     }
 
     //根据界面被打开的方式，改变按钮文字，spinner列表，switch开关，text文本剩余时间的显示
@@ -157,7 +158,7 @@ public class AddAlarmActivity extends AppCompatActivity
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {//Spinner周期选择器回调方法
-        repetitionResult(i);
+        SpinnerSelectResult(i);
     }
 
     @Override
@@ -165,19 +166,25 @@ public class AddAlarmActivity extends AppCompatActivity
 
     }
 
-    private void repetitionResult(int position){
+    private void SpinnerSelectResult(int position){
         switch (position){
             case 0:
                 repeat = "0";//单次
+                isDivRepeat = false;
                 break;
             case 1:
                 repeat = "8";//每天
+                isDivRepeat = false;
                 break;
             case 2:
                 repeat = "12345";//周一至五
+                isDivRepeat = false;
                 break;
             case 3:
-                divRepetitionResult();//自定义重复
+                if (!isDivRepeat){
+                    divRepetitionResult();//自定义重复
+                    isDivRepeat = true;
+                }
                 break;
         }
         changeToTargetString(targetTime ,repeat);
@@ -204,10 +211,6 @@ public class AddAlarmActivity extends AppCompatActivity
     }
 
     private void divRepetitionResult(){
-        if (loadSelect){
-            loadSelect = false;
-            return;
-        }
         View view = LayoutInflater.from(this).inflate(R.layout.div_repetition , null);
         int[] checkDay = new int[]{R.id.check_monday , R.id.check_tuesday , R.id.check_wednesday ,
         R.id.check_thursday , R.id.check_friday , R.id.check_saturday , R.id.check_sunday};
@@ -244,15 +247,21 @@ public class AddAlarmActivity extends AppCompatActivity
 
     //判断用户选择的周期（一次 或 重复）并设置相应的spinner选择项
     private void selectInterval() {
+        int selection;
         if (repeat.equals("0") ){
-            chooseSpinner.setSelection(0);
+            selection = 0;
         }else if (repeat.equals("1234567") || repeat.equals("8") ){
+            selection = 1;
             chooseSpinner.setSelection(1);
         }else if (repeat.equals("12345")){
+            selection = 2;
             chooseSpinner.setSelection(2);
         }else{
+            selection = 3;
+            isDivRepeat = true;
             chooseSpinner.setSelection(3);
         }
+        chooseSpinner.setSelection(selection);
         changeToTargetString(targetTime, repeat);
     }
 
@@ -263,5 +272,11 @@ public class AddAlarmActivity extends AppCompatActivity
             returnResult();
         }
         return true;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        isDivRepeat = false;
+        return false;
     }
 }

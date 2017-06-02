@@ -22,8 +22,8 @@ public class MainActivity extends FragmentActivity{
         FragmentTabHost tabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         tabHost.setup(this,getSupportFragmentManager() ,android.R.id.tabcontent);
         tabHost.addTab(tabHost.newTabSpec("tab1").setIndicator("闹钟") , AlarmFragment.class , null);
-        tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("秒表") , ChronographFragment.class , null);
-        tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("倒计时") , CountdownFragment.class , null);
+        tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator("秒表") , ChronographFragment.class , null);
+        tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("倒计时") , CountdownFragment.class , null);
     }
 
     @Override

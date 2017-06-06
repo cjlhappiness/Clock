@@ -66,7 +66,7 @@ public class AddAlarmActivity extends AppCompatActivity
         chooseSpinner.setOnTouchListener(this);
         chooseSpinner.setOnItemSelectedListener(this);
         chooseVibrate.setOnCheckedChangeListener(this);
-        chooseRing.setOnClickListener(this);
+        chooseRing.setOnCheckedChangeListener(this);
         cancel.setOnClickListener(this);
         confirm.setOnClickListener(this);
         helper = new AlarmDataBaseHelper(this, "Alarm.db" , null , 1);

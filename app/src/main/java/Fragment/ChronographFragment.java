@@ -119,6 +119,7 @@ public class ChronographFragment extends Fragment implements View.OnClickListene
                     resetTimer();
                     buttonStop.setVisibility(View.GONE);
                     chronographShow.setText("00:00");
+                    chronographMiShow.setText("");
                     buttonStart.setText("开始");
                     buttonStop.setText("暂停");
                     listAdapter.notifyDataSetChanged();
@@ -160,12 +161,12 @@ public class ChronographFragment extends Fragment implements View.OnClickListene
         long s = nowTime / 1000 % 60;//计算秒
         long mi = nowTime % 1000;//计算毫秒
         switch (code){
-            case 0:
-                return String.format("%02d:%02d", m, s);
             case 1:
+                return String.format("%02d:%02d", m, s);
+            case 2:
                 return String.format("%03d", mi);
             default:
-                return String.format("%02d:%02d;%03d", m, s, mi);
+                return String.format("%02d:%02d:%03d", m, s, mi);
         }
     }
 

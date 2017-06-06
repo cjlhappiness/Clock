@@ -11,8 +11,15 @@
         android:layout_height="wrap_content"
         android:textSize="75sp"
         android:gravity="center"
-        android:layout_margin="25dp"
+        android:layout_marginTop="25dp"
         android:text="@string/chronograph_time"/>
+    <TextView
+        android:id="@+id/chronograph_mi_show"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:layout_marginBottom="25dp"/>
 
     <LinearLayout
         android:orientation="horizontal"

@@ -22,6 +22,7 @@ import java.util.Map;
 public class ChronographFragment extends Fragment implements View.OnClickListener{
 
     private TextView chronographShow;
+    private TextView chronographMiShow;
     private Button buttonStart;
     private Button buttonStop;
     private ListView chronographList;
@@ -35,11 +36,14 @@ public class ChronographFragment extends Fragment implements View.OnClickListene
     private static final int TIMER_CODE = 0x11;
     private View view;
 
+    private final int[] CODE = new int[]{1, 2, 3};//1:获取分秒，2获取毫秒，3获取全部合并字符串
+
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            chronographShow.setText(timeChange(mStart));
+            chronographShow.setText(timeChange(CODE[0], mStart));
+            chronographMiShow.setText(timeChange(CODE[1], mStart));
             handler.sendEmptyMessageDelayed(TIMER_CODE ,100);
         }
     };
@@ -55,6 +59,7 @@ public class ChronographFragment extends Fragment implements View.OnClickListene
         }
 
         chronographShow = (TextView) view.findViewById(R.id.chronograph_show);
+        chronographMiShow = (TextView) view.findViewById(R.id.chronograph_mi_show);
         buttonStart = (Button) view.findViewById(R.id.chronograph_start);
         buttonStop = (Button) view.findViewById(R.id.chronograph_stop);
         chronographList = (ListView) view.findViewById(R.id.chronograph_list);
@@ -64,7 +69,7 @@ public class ChronographFragment extends Fragment implements View.OnClickListene
 
     private void initChronograph() {
         if (mTime != 0){
-            chronographShow.setText(timeChange(mStart));
+            chronographShow.setText(timeChange(CODE[0], mStart));
         }
         if (isRun){
             buttonStart.setText("计次");
@@ -98,7 +103,7 @@ public class ChronographFragment extends Fragment implements View.OnClickListene
                 }else{                 //计次
                     Map map = new HashMap();
                     map.put("number",String.format("%02d",++listSize));
-                    map.put("time" ,timeChange(mStart));
+                    map.put("time" ,timeChange(CODE[2], mStart));
                     list.add(0 ,map);
                     listAdapter.notifyDataSetChanged();
                 }
@@ -142,7 +147,7 @@ public class ChronographFragment extends Fragment implements View.OnClickListene
         isPause = false;
     }
 
-    private String timeChange(long mStart){
+    private String timeChange(int code, long mStart){
         //这里判断，如果isPause=true说明已经暂停，因此要直接使用mTime的值即可
         long nowTime;
         if (isPause){
@@ -153,9 +158,15 @@ public class ChronographFragment extends Fragment implements View.OnClickListene
 //        long h = nowTime / (60 * 60 * 1000);//计算小时
         long m = nowTime / (60 * 1000);//计算分
         long s = nowTime / 1000 % 60;//计算秒
-        String string = String.format("%02d:%02d",m ,s);
-        return string;
+        long mi = nowTime % 1000;//计算毫秒
+        switch (code){
+            case 0:
+                return String.format("%02d:%02d", m, s);
+            case 1:
+                return String.format("%03d", mi);
+            default:
+                return String.format("%02d:%02d;%03d", m, s, mi);
+        }
     }
-
 
 }
